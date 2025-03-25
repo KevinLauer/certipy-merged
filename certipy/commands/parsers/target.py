@@ -104,3 +104,14 @@ def add_argument_group(
         action="store_true",
         help="Use LDAP channel binding for LDAP communication (LDAPS only)",
     )
+    group.add_argument(
+        "-ldap-auth-simple",
+        action="store_true",
+        help="Use ldap3.SIMPLE auth type"
+    )
+    group.add_argument(
+        "-ldap-port",
+        action="store",
+        required=False,
+        help="Choose LDAP port",
+    )

@@ -66,9 +66,31 @@ def add_subparser(subparsers: argparse._SubParsersAction) -> Tuple[str, Callable
         help="Show only vulnerable certificate templates based on nested group memberships. Does not affect BloodHound output",
     )
     group.add_argument(
+        "-oids",
+        action="store_true",
+        help="Show OIDs (Issuance Policies) and their properties.",
+    )
+    group.add_argument(
         "-hide-admins",
         action="store_true",
         help="Don't show administrator permissions for -text, -stdout, and -json. Does not affect BloodHound output",
+    )
+    group.add_argument(
+        "-esc14",
+        action="store_true",
+        help="Search for ESC14 vulnerability (warning, may take some time). Not compatible with BloodHound or JSON output",
+    )
+    group.add_argument(
+        "-sid",
+        action="store",
+        metavar="object sid",
+        help="SID of the user provided in the command line, useful for cross domain authentication.",
+    )
+    group.add_argument(
+        "-dn",
+        action="store",
+        metavar="distinguished name",
+        help="Distinguished name of the user provided in the command line, useful for cross domain authentication",
     )
 
     group = subparser.add_argument_group("connection options")

