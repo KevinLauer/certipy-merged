@@ -22,6 +22,7 @@ from impacket.dcerpc.v5 import epm
 from certipy.lib.certificate import (
     cert_id_to_parts,
     cert_to_pem,
+    create_key_archival,
     create_csr,
     create_pfx,
     csr_to_der,
@@ -264,7 +265,18 @@ class ADCSHTTPAttackClient(ProtocolAttack):
             key_size=self.adcs_relay.key_size,
         )
 
-        csr = csr_to_pem(csr).decode()
+        if self.archive_key:
+            logging.info("Trying to retrieve CAX certificate from file %s" % self.archive_key)
+            with open(self.archive_key, "rb") as f:
+                cax_cert = f.read()
+                logging.info("Retrieved CAX certificate")
+
+            csr = create_key_archival(csr, self.key, cax_cert)
+            csr = base64.b64encode(csr).decode()
+            csr = f"-----BEGIN PKCS7-----\n{csr}\n-----END PKCS7-----"
+
+        else:
+            csr = csr_to_pem(csr).decode()
 
         attributes = ["CertificateTemplate:%s" % template]
 
@@ -562,6 +574,14 @@ class ADCSRPCAttackClient(ProtocolAttack):
         self.key = key
         self.adcs_relay.key = key
 
+        if self.archive_key:
+            logging.info("Trying to retrieve CAX certificate from file %s" % self.archive_key)
+            with open(self.archive_key, "rb") as f:
+                cax_cert = f.read()
+                logging.info("Retrieved CAX certificate")
+
+            csr = create_key_archival(csr, self.key, cax_cert)
+
         csr = csr_to_der(csr)
 
         attributes = ["CertificateTemplate:%s" % template]
@@ -625,6 +645,7 @@ class Relay:
         upn=None,
         dns=None,
         sid=None,
+        archive_key=None,
         retrieve=None,
         key_size: int = 2048,
         out=None,
@@ -642,6 +663,7 @@ class Relay:
         self.upn = upn
         self.dns = dns
         self.sid = sid
+        self.archive_key = archive_key
         self.request_id = int(retrieve)
         self.key_size = key_size
         self.out = out
