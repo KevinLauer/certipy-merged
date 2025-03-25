@@ -3,13 +3,9 @@ import base64
 import copy
 import json
 import os
-<<<<<<< HEAD
 import re
 import requests
 import ssl
-=======
-import requests
->>>>>>> main
 import socket
 import struct
 import time
