@@ -107,6 +107,7 @@ options:
 
 ### Merged PRs:
 
+- [X] [#258](https://github.com/ly4k/Certipy/pull/258): Disable Multirelay to fix certipy relay
 - [X] [#255](https://github.com/ly4k/Certipy/pull/255): Adds support for ESC14
 - [X] [#254](https://github.com/ly4k/Certipy/pull/254): Adds check for HTTPS and Channel Binding aka EPA for ESC8
 - [X] [#248](https://github.com/ly4k/Certipy/pull/248): fix subject in generated certificate of shadow credentials
