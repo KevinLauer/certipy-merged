@@ -26,12 +26,14 @@ from certipy.lib.certificate import (
     create_csr,
     create_pfx,
     csr_to_der,
+    der_to_csr,
     csr_to_pem,
     get_identifications_from_certificate,
     get_object_sid_from_certificate,
     key_to_pem,
     pem_to_cert,
     pem_to_key,
+    der_to_cert,
     rsa,
     x509,
 )
@@ -265,13 +267,14 @@ class ADCSHTTPAttackClient(ProtocolAttack):
             key_size=self.adcs_relay.key_size,
         )
 
-        if self.archive_key:
-            logging.info("Trying to retrieve CAX certificate from file %s" % self.archive_key)
-            with open(self.archive_key, "rb") as f:
+        if self.adcs_relay.archive_key:
+            logging.info("Trying to retrieve CAX certificate from file %s" % self.adcs_relay.archive_key)
+            with open(self.adcs_relay.archive_key, "rb") as f:
                 cax_cert = f.read()
+                cax_cert = der_to_cert(cax_cert)
                 logging.info("Retrieved CAX certificate")
 
-            csr = create_key_archival(csr, self.key, cax_cert)
+            csr = create_key_archival(csr, key, cax_cert)
             csr = base64.b64encode(csr).decode()
             csr = f"-----BEGIN PKCS7-----\n{csr}\n-----END PKCS7-----"
 
@@ -574,15 +577,16 @@ class ADCSRPCAttackClient(ProtocolAttack):
         self.key = key
         self.adcs_relay.key = key
 
-        if self.archive_key:
-            logging.info("Trying to retrieve CAX certificate from file %s" % self.archive_key)
-            with open(self.archive_key, "rb") as f:
+        if self.adcs_relay.archive_key:
+            logging.info("Trying to retrieve CAX certificate from file %s" % self.adcs_relay.archive_key)
+            with open(self.adcs_relay.archive_key, "rb") as f:
                 cax_cert = f.read()
+                cax_cert = der_to_cert(cax_cert)
                 logging.info("Retrieved CAX certificate")
 
             csr = create_key_archival(csr, self.key, cax_cert)
-
-        csr = csr_to_der(csr)
+        else:
+            csr = csr_to_der(csr)
 
         attributes = ["CertificateTemplate:%s" % template]
 
