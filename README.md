@@ -38,7 +38,7 @@ Certipy is an offensive tool for enumerating and abusing Active Directory Certif
 If you prefer the convenience of automagically managed virtual environments, use [`pipx`](https://github.com/pypa/pipx):
 
 ```bash
-pipx install git+https://github.com/zimedev/certipy-merged.git@main
+pipx install git+https://github.com/KevinLauer/certipy-merged.git@main
 ```
 
 If you need support for LDAP Channel Binding, you need to inject the patched `ldap3` library into the Python venv:
