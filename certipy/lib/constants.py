@@ -66,6 +66,27 @@ WELLKNOWN_SIDS = {
     "S-1-5-32-580": ("Access Control Assistance Operators", "GROUP"),
 }
 
+# https://github.com/garrettfoster13/aced/blob/b5d1ad1b8cfb84a6420be22658beec340ef9e396/lib/sid.py#L48
+WELLKNOWN_RIDS = {
+    "498": ("Enterprise Read-only Domain Controllers", "GROUP"),
+    "500": ("Administrator", "USER"),
+    "501": ("Guest", "USER"),
+    "502": ("KRBTGT", "USER"),
+    "512": ("Domain Admins", "GROUP"),
+    "513": ("Domain Users", "GROUP"),
+    "514": ("Domain Guests", "GROUP"),
+    "515": ("Domain Computers", "GROUP"),
+    "516": ("Domain Controllers", "GROUP"),
+    "517": ("Cert Publishers", "GROUP"),
+    "518": ("Schema Admins", "GROUP"),
+    "519": ("Enterprise Admins", "GROUP"),
+    "520": ("Group Policy Creator Owners", "GROUP"),
+    "521": ("Read-only Domain Controllers", "GROUP"),
+    "522": ("Cloneable Domain Controllers", "GROUP"),
+    "526": ("Key Admins", "GROUP"),
+    "527": ("Enterprise Key Admins", "GROUP"),
+    "553": ("RAS and IAS Servers", "GROUP"),
+}
 
 # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-crtd/1192823c-d839-4bc3-9b6b-fa8c53507ae1
 class MS_PKI_CERTIFICATE_NAME_FLAG(IntFlag):
@@ -252,6 +273,7 @@ class CERTIFICATE_RIGHTS(IntFlag):
     GENERIC_ALL = 983551
     WRITE_OWNER = 524288
     WRITE_DACL = 262144
+    GENERIC_WRITE = 131112
     WRITE_PROPERTY = 32
 
     def to_list(self):
@@ -268,6 +290,12 @@ class CERTIFICATE_RIGHTS(IntFlag):
             filtered_members.append(member)
         return filtered_members
 
+class ISSUANCE_POLICY_RIGHTS(IntFlag):
+    GENERIC_READ = 131220
+    GENERIC_ALL = 983551
+    WRITE_OWNER = 524288
+    WRITE_DACL = 262144
+    WRITE_PROPERTY = 32
 
 # https://github.com/GhostPack/Certify/blob/2b1530309c0c5eaf41b2505dfd5a68c83403d031/Certify/Domain/CertificateAuthority.cs#L11
 class CERTIFICATION_AUTHORITY_RIGHTS(IntFlag):
