@@ -968,7 +968,6 @@ class Request:
     def getCAX(self) -> bool:
         username = self.target.username
 
-        print(vars(self.target))
         ca = CA(self.target, self.ca)
         logging.info("Trying to retrieve CAX certificate")
         cax_cert = ca.get_exchange_certificate()
